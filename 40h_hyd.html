@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Maintenance — Keestrack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #F39200;
+    --ink: #1a1a1a;
+    --ink-soft: #555;
+    --paper: #fafafa;
+    --line: #e3e3e3;
+    --warn: #b34700;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: "Ubuntu", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    font-size: 16px;
+  }
+
+  header {
+    background: var(--ink);
+    color: #fff;
+    padding: 20px 18px 18px;
+    border-bottom: 4px solid var(--orange);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .brand-mark {
+    width: 36px; height: 36px;
+    background: var(--orange);
+    color: var(--ink);
+    font-weight: 900;
+    display: grid; place-items: center;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  .brand-text .kicker {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--orange);
+    font-weight: 700;
+    display: block;
+  }
+  .brand-text h1 {
+    margin: 2px 0 0;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .brand-text h1 .model {
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+  .brand-text h1 .elec {
+    color: #00E676;
+    font-weight: 800;
+  }
+
+  .lang-selector {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 260px;
+  }
+  .lang-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 9px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.2;
+    transition: all .15s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 600;
+    text-align: left;
+  }
+  .lang-btn:hover { border-color: var(--orange); }
+  .lang-btn.open {
+    border-color: var(--orange);
+    background: rgba(243,146,0,0.12);
+  }
+  .lang-btn .lang-flag {
+    font-size: 18px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .lang-btn .lang-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .lang-btn .lang-arrow {
+    color: var(--orange);
+    font-size: 12px;
+    transition: transform .2s ease;
+    flex-shrink: 0;
+  }
+  .lang-btn.open .lang-arrow { transform: rotate(180deg); }
+
+  .lang-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    max-height: 280px;
+    overflow-y: auto;
+    z-index: 20;
+    display: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .lang-panel.open { display: block; }
+  .lang-option {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  .lang-option:last-child { border-bottom: none; }
+  .lang-option:hover { background: #fff7e6; }
+  .lang-option.active {
+    background: #fff7e6;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .lang-option.active::after {
+    content: "✓";
+    margin-left: auto;
+    color: var(--orange);
+    font-weight: bold;
+  }
+  .lang-option .lang-flag { font-size: 18px; line-height: 1; flex-shrink: 0; }
+
+  main {
+    padding: 18px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .section {
+    margin-bottom: 26px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--orange);
+    flex-wrap: wrap;
+  }
+  .section-num {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--orange);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .section-note {
+    font-size: 12px;
+    color: var(--warn);
+    font-weight: 600;
+    font-style: italic;
+    flex-basis: 100%;
+    margin-top: -2px;
+  }
+
+  ul.items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  ul.items li {
+    padding: 10px 0 10px 22px;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    line-height: 1.5;
+    color: #222;
+    position: relative;
+  }
+  ul.items li::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 19px;
+    width: 6px;
+    height: 6px;
+    background: var(--orange);
+    border-radius: 50%;
+  }
+  ul.items li:last-child { border-bottom: none; }
+
+  ul.legend {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 2px;
+  }
+  ul.legend li {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 12px;
+    align-items: baseline;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+    line-height: 1.45;
+    color: #222;
+  }
+  ul.legend li:last-child { border-bottom: none; }
+  ul.legend li .tag {
+    margin: 0;
+    text-align: center;
+    width: 100%;
+    padding: 3px 0;
+    vertical-align: baseline;
+  }
+  main[dir="rtl"] ul.legend li .tag { margin: 0; }
+
+  .tag {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--orange);
+    font-weight: 800;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-right: 6px;
+    vertical-align: 2px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  footer {
+    text-align: center;
+    padding: 18px;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  main[dir="rtl"] .tag { margin-right: 0; margin-left: 6px; }
+  main[dir="rtl"] ul.items li { padding: 10px 22px 10px 0; }
+  main[dir="rtl"] ul.items li::before { left: auto; right: 4px; }
+  /* ---- Refined header layout ---- */
+  header {
+    padding: 22px 20px 18px;
+  }
+  .brand { align-items: flex-start; }
+  .brand-text { flex: 1; min-width: 0; }
+  .interval-badge {
+    display: inline-block;
+    margin-top: 6px;
+    background: var(--orange);
+    color: var(--ink);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .header-controls {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .header-controls .lang-selector { flex: 1; max-width: 260px; }
+  .print-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 9px 14px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+    white-space: nowrap;
+  }
+  .print-btn:hover {
+    border-color: var(--orange);
+    background: rgba(243,146,0,0.12);
+  }
+  .print-btn .print-ico { font-size: 16px; line-height: 1; color: var(--orange); }
+
+  /* ---- Refined sections & rows ---- */
+  main { padding: 22px 18px 8px; }
+  .section { margin-bottom: 30px; }
+  .section-header {
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 8px;
+  }
+  .section-num {
+    background: var(--ink);
+    color: var(--orange);
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 800;
+  }
+  .section-title { letter-spacing: 0.2px; }
+  ul.items li {
+    padding: 11px 0 11px 24px;
+    color: #2a2a2a;
+  }
+  ul.items li:hover { background: rgba(243,146,0,0.04); }
+  ul.items li::before { top: 20px; }
+
+  /* ---- Refined footer ---- */
+  footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 26px 18px;
+    margin-top: 14px;
+    border-top: 1px solid var(--line);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .foot-brand {
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .foot-meta { font-size: 11px; color: var(--ink-soft); }
+
+  /* ---- Print / PDF ---- */
+  @media print {
+    :root { --paper: #fff; }
+    @page { margin: 16mm 14mm; }
+    html, body {
+      background: #fff;
+      font-size: 11pt;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    header {
+      position: static;
+      background: #fff;
+      color: var(--ink);
+      border-bottom: 3px solid var(--orange);
+      padding: 0 0 12px;
+      margin-bottom: 16px;
+    }
+    .brand-mark { background: var(--orange); color: #fff; }
+    .brand-text .kicker { color: var(--warn); }
+    .brand-text h1 { color: var(--ink); font-size: 18pt; }
+    .brand-text h1 .elec { color: var(--orange); }
+    .header-controls, .lang-selector, .print-btn { display: none !important; }
+    .interval-badge { border: 1px solid var(--orange); }
+    main { padding: 0; max-width: none; }
+    .note-banner { margin: 0 0 16px; }
+    .section { margin-bottom: 18px; break-inside: avoid; page-break-inside: avoid; }
+    .section-header { break-after: avoid; page-break-after: avoid; }
+    .section-num { border: 1px solid var(--ink); }
+    ul.items li, ul.legend li { break-inside: avoid; page-break-inside: avoid; }
+    ul.items li:hover { background: none; }
+    footer {
+      border-top: 1px solid var(--line);
+      margin-top: 20px;
+    }
+  }
+</style>
+
+<style>
+  /* ===== Model selection screen ===== */
+  #modelScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--paper);
+  }
+  #modelScreen.hidden { display: none; }
+  .ms-brand {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 34px;
+  }
+  .ms-brand .brand-mark { width: 48px; height: 48px; font-size: 22px; border-radius: 7px; }
+  .ms-brand .ms-titles .kicker {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--warn); font-weight: 700; display:block;
+  }
+  .ms-brand .ms-titles h1 { margin: 3px 0 0; font-size: 20px; font-weight: 700; }
+  .ms-prompt { text-align: center; margin-bottom: 26px; }
+  .ms-prompt h2 { margin: 0 0 6px; font-size: 19px; font-weight: 700; color: var(--ink); }
+  .ms-prompt p  { margin: 0; font-size: 14px; color: var(--ink-soft); max-width: 360px; }
+  .model-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 14px;
+    width: 100%;
+    max-width: 480px;
+  }
+  .model-card {
+    appearance: none;
+    border: 2px solid var(--line);
+    background: #fff;
+    border-radius: 12px;
+    padding: 22px 14px;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: center;
+    transition: all .15s ease;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .model-card:hover, .model-card:focus-visible {
+    border-color: var(--orange);
+    box-shadow: 0 6px 18px rgba(243,146,0,0.18);
+    transform: translateY(-2px);
+    outline: none;
+  }
+  .model-card:active { transform: translateY(0); }
+  .model-card .mc-name {
+    font-size: 26px; font-weight: 800; color: var(--ink);
+    letter-spacing: 0.5px;
+  }
+  .model-card .mc-name .elec { color: var(--orange); }
+  .model-card .mc-tag {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--ink-soft); font-weight: 600;
+  }
+  .model-card.pending { opacity: 0.72; }
+  .model-card.pending .mc-tag { color: var(--warn); }
+
+  /* ===== Model pill in header (change model) ===== */
+  .model-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    margin-top: 8px;
+    background: var(--orange);
+    color: var(--ink);
+    border: none;
+    border-radius: 20px;
+    padding: 5px 12px 5px 14px;
+    font-family: inherit;
+    font-size: 13px; font-weight: 800;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .model-pill .mp-elec { color: #fff; }
+  .model-pill .mp-swap {
+    font-size: 13px; line-height: 1;
+    opacity: 0.85;
+  }
+  .model-pill:hover { filter: brightness(1.05); box-shadow: 0 3px 10px rgba(243,146,0,0.4); }
+  .model-pill:active { filter: brightness(0.96); }
+
+  /* hide app shell until a model is picked */
+  #appShell.hidden { display: none; }
+
+  /* ===== Qty badge for lubrication ===== */
+  ul.items li .qty-badge {
+    display: inline-block;
+    margin-left: 8px;
+    background: #fff;
+    border: 1.5px solid var(--orange);
+    color: var(--warn);
+    font-size: 11px; font-weight: 800;
+    padding: 1px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    vertical-align: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+  main[dir="rtl"] ul.items li .qty-badge { margin-left: 0; margin-right: 8px; }
+
+  /* small inline "standard timing" note */
+  .li-note {
+    color: var(--warn); font-style: italic; font-weight: 600; font-size: 12px;
+  }
+
+  /* ===== Coming soon placeholder ===== */
+  .coming-soon {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+  }
+  .coming-soon .cs-ico { font-size: 46px; margin-bottom: 14px; }
+  .coming-soon h2 { margin: 0 0 8px; font-size: 18px; color: var(--ink); font-weight: 700; }
+  .coming-soon p  { margin: 0; font-size: 14px; }
+
+  @media print {
+    .model-pill { display: none !important; }
+    #modelScreen { display: none !important; }
+  }
+</style>
+
+</head>
+<body>
+
+<!-- ===================== MODEL SELECTION SCREEN ===================== -->
+<div id="modelScreen">
+  <div class="ms-brand">
+    <div class="brand-mark">K</div>
+    <div class="ms-titles">
+      <span class="kicker">Keestrack</span>
+      <h1 data-i18n="page_title">Weekly Maintenance — Keestrack</h1>
+    </div>
+  </div>
+  <div class="ms-prompt">
+    <h2 data-i18n="model_select_title">Select Machine Model</h2>
+    <p data-i18n="model_select_sub">Choose the machine to display its weekly maintenance schedule</p>
+  </div>
+  <div class="model-grid" id="modelGrid"></div>
+</div>
+
+<!-- ===================== APP SHELL ===================== -->
+<div id="appShell" class="hidden">
+<header>
+  <div class="brand">
+    <div class="brand-mark">K</div>
+    <div class="brand-text">
+      <span class="kicker" data-i18n="kicker">Maintenance Schedule</span>
+      <h1>
+        <span data-i18n="page_title">Weekly Maintenance — Keestrack</span>
+        <span class="model" id="headerModel"></span>
+      </h1>
+      <button class="model-pill" id="modelPill" type="button">
+        <span id="pillName"></span>
+        <span class="mp-swap" aria-hidden="true">⇄</span>
+        <span data-i18n="change_model" style="font-weight:700;">Change model</span>
+      </button>
+    </div>
+    <span class="interval-badge" data-i18n="interval">40 h · Weekly</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-selector">
+      <button class="lang-btn" id="langBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+        <span class="lang-flag" id="currentFlag">🇬🇧</span>
+        <span class="lang-name" id="currentName">English</span>
+        <span class="lang-arrow">▾</span>
+      </button>
+      <div class="lang-panel" id="langPanel" role="listbox"></div>
+    </div>
+    <button class="print-btn" id="printBtn" type="button" title="Print / PDF" aria-label="Print">
+      <span class="print-ico" aria-hidden="true">⎙</span>
+      <span class="print-label" data-i18n="print">Print / PDF</span>
+    </button>
+  </div>
+</header>
+
+<main id="mainContent"></main>
+
+<footer>
+  <span class="foot-brand">Keestrack</span>
+  <span class="foot-meta"><span data-i18n="doc_ref">Maintenance schedule · 40 h</span> · <span id="footModel"></span> · Rev. 01</span>
+</footer>
+</div>
+
+<script>
+
+const LANGS = [
+  { code: 'en', flag: '🇬🇧', label: 'English',    dir: 'ltr' },
+  { code: 'it', flag: '🇮🇹', label: 'Italiano',   dir: 'ltr' },
+  { code: 'es', flag: '🇪🇸', label: 'Español',    dir: 'ltr' },
+  { code: 'de', flag: '🇩🇪', label: 'Deutsch',    dir: 'ltr' },
+  { code: 'fr', flag: '🇫🇷', label: 'Français',   dir: 'ltr' },
+  { code: 'nl', flag: '🇳🇱', label: 'Nederlands', dir: 'ltr' },
+  { code: 'pt', flag: '🇵🇹', label: 'Português',  dir: 'ltr' },
+  { code: 'no', flag: '🇳🇴', label: 'Norsk',      dir: 'ltr' },
+  { code: 'ro', flag: '🇷🇴', label: 'Română',     dir: 'ltr' },
+  { code: 'pl', flag: '🇵🇱', label: 'Polski',     dir: 'ltr' },
+  { code: 'cs', flag: '🇨🇿', label: 'Čeština',    dir: 'ltr' },
+  { code: 'ru', flag: '🇷🇺', label: 'Русский',    dir: 'ltr' },
+  { code: 'zh', flag: '🇨🇳', label: '中文',         dir: 'ltr' },
+  { code: 'hi', flag: '🇮🇳', label: 'हिन्दी',         dir: 'ltr' },
+  { code: 'ar', flag: '🇸🇦', label: 'العربية',     dir: 'rtl' },
+  { code: 'he', flag: '🇮🇱', label: 'עברית',      dir: 'rtl' }
+];
+
+const T = {
+  en: { kicker:"Maintenance Schedule", page_title:"Weekly Maintenance — Keestrack",
+    sec_belt:"Belt Conveyors", sec_magnet:"Magnet", sec_crusher:"Crushing Chamber & Hoppers",
+    sec_cleaning:"Cleaning", sec_lube:"Lubrication", sec_func:"Functional Checks", sec_general:"General",
+    note_if_installed:"— if installed", note_no_autogrease:"— only without automatic greasing system",
+    belt_1:"Check the cleanliness and rotation of belt rollers and return rollers.",
+    belt_2:"Check belt centering and wear of skirting rubber.",
+    belt_3:"Check the wear of scrapers and the overall condition of the belts.",
+    mag_1:"Check the cleanliness and rotation of belt rollers.",
+    mag_2:"Check belt wear and centering.",
+    mag_3:"Check the wear of the chute.",
+    cru_1:"Check the wear level and fastening of parts on the JCR crushing chamber, on the FEH and VIF, and on discharge hoppers.",
+    cru_2:"Visually check the pressure level on the retraction cylinder.",
+    cru_3:"Listen for abnormal noises during setting adjustment.",
+    cru_4:"Check wear uniformity on the toggle plate.",
+    cln_1:"Clean the machine and coolers with a water jet or compressed air.",
+    cln_2:"Clean the elements on the vent valve of the water pump.",
+    cln_3:"Clean the stockpile sensor.",
+    cln_4:"Clean the hydraulic block — compressed air only.",
+    lub_1:"Lubricate all 4 bearings (340 g per bearing).",
+    lub_2:"Lubricate the drive head (10 g + 10 g).",
+    lub_3:"Lubricate the return head (10 g + 10 g).",
+    fnc_1:"Listen for abnormal noises from the gearbox.",
+    gen_1:"Tighten nuts and bolts.",
+    gen_2:"Electrobox and crusher inverter (if installed): clean the main (outer) filter cartridge.",
+    sec_legend:"Legend",
+    leg_enu:"Power unit",
+    leg_feh:"Feeder hopper",
+    leg_hyd:"Hydraulic installation",
+    leg_jcr:"Jaw crusher",
+    leg_lsc:"Side conveyor",
+    leg_lub:"Lubrication system (manual or automatic)",
+    leg_mag:"Magnetic belt separator (option)",
+    leg_mcl:"Main conveyor",
+    leg_tra:"Tracks",
+    leg_vif:"Vibrating feeder",
+    leg_was:"Dust suppression system"
+  },
+
+  it: { kicker:"Piano di Manutenzione", page_title:"Manutenzione Settimanale — Keestrack",
+    sec_belt:"Nastri Trasportatori", sec_magnet:"Magnete", sec_crusher:"Camera di Frantumazione e Tramogge",
+    sec_cleaning:"Pulizia", sec_lube:"Lubrificazione", sec_func:"Controlli Funzionali", sec_general:"Generale",
+    note_if_installed:"— se installato", note_no_autogrease:"— solo in assenza di sistema di ingrassaggio automatico",
+    belt_1:"Controllare la pulizia e la rotazione dei rulli del nastro e dei rulli di ritorno.",
+    belt_2:"Controllare la centratura del nastro e l'usura della gomma di tenuta.",
+    belt_3:"Controllare l'usura dei raschiatori e le condizioni generali dei nastri.",
+    mag_1:"Controllare la pulizia e la rotazione dei rulli del nastro.",
+    mag_2:"Controllare l'usura e la centratura del nastro.",
+    mag_3:"Controllare l'usura dello scivolo.",
+    cru_1:"Controllare il livello di usura e il serraggio dei componenti sulla camera di frantumazione JCR, su FEH e VIF e sulle tramogge di scarico.",
+    cru_2:"Verificare visivamente il livello di pressione sul cilindro di retrazione.",
+    cru_3:"Ascoltare l'eventuale presenza di rumori anomali durante la regolazione del setting.",
+    cru_4:"Verificare l'uniformità di usura della toggle plate.",
+    cln_1:"Pulire la macchina e i radiatori con un getto d'acqua o aria compressa.",
+    cln_2:"Pulire gli elementi sulla valvola di sfiato della pompa acqua.",
+    cln_3:"Pulire il sensore di accumulo (stockpile).",
+    cln_4:"Pulire il blocco idraulico — esclusivamente con aria compressa.",
+    lub_1:"Lubrificare tutti e 4 i cuscinetti (340 g per cuscinetto).",
+    lub_2:"Lubrificare la testa motrice (10 g + 10 g).",
+    lub_3:"Lubrificare la testa di ritorno (10 g + 10 g).",
+    fnc_1:"Ascoltare l'eventuale presenza di rumori anomali dal riduttore.",
+    gen_1:"Serrare dadi e bulloni.",
+    gen_2:"Quadro elettrico e inverter frantoio (se installati): pulire la cartuccia filtro principale (elemento esterno).",
+    sec_legend:"Legenda",
+    leg_enu:"Gruppo potenza",
+    leg_feh:"Tramoggia di alimentazione",
+    leg_hyd:"Installazione idraulica",
+    leg_jcr:"Frantoio",
+    leg_lsc:"Nastro trasportatore laterale",
+    leg_lub:"Sistema di lubrificazione (manuale o automatico)",
+    leg_mag:"Separatore magnetico a nastro (opzione)",
+    leg_mcl:"Nastro trasportatore principale",
+    leg_tra:"Cingoli",
+    leg_vif:"Alimentatore vibrante",
+    leg_was:"Sistema di abbattimento polvere"
+  },
+
+  es: { kicker:"Plan de Mantenimiento", page_title:"Mantenimiento Semanal — Keestrack",
+    sec_belt:"Cintas Transportadoras", sec_magnet:"Imán", sec_crusher:"Cámara de Trituración y Tolvas",
+    sec_cleaning:"Limpieza", sec_lube:"Lubricación", sec_func:"Controles Funcionales", sec_general:"General",
+    note_if_installed:"— si está instalado", note_no_autogrease:"— solo sin sistema de engrase automático",
+    belt_1:"Comprobar la limpieza y la rotación de los rodillos de la cinta y los rodillos de retorno.",
+    belt_2:"Comprobar el centrado de la cinta y el desgaste del faldón de goma.",
+    belt_3:"Comprobar el desgaste de los rascadores y el estado general de las cintas.",
+    mag_1:"Comprobar la limpieza y la rotación de los rodillos de la cinta.",
+    mag_2:"Comprobar el desgaste y el centrado de la cinta.",
+    mag_3:"Comprobar el desgaste de la rampa.",
+    cru_1:"Comprobar el nivel de desgaste y la fijación de los componentes de la cámara de trituración JCR, del FEH y VIF y de las tolvas de descarga.",
+    cru_2:"Comprobar visualmente el nivel de presión en el cilindro de retracción.",
+    cru_3:"Prestar atención a ruidos anómalos durante el ajuste del setting.",
+    cru_4:"Comprobar la uniformidad del desgaste de la placa toggle.",
+    cln_1:"Limpiar la máquina y los radiadores con chorro de agua o aire comprimido.",
+    cln_2:"Limpiar los elementos de la válvula de purga de la bomba de agua.",
+    cln_3:"Limpiar el sensor de acopio (stockpile).",
+    cln_4:"Limpiar el bloque hidráulico — solo con aire comprimido.",
+    lub_1:"Lubricar los 4 rodamientos (340 g por rodamiento).",
+    lub_2:"Lubricar el cabezal motriz (10 g + 10 g).",
+    lub_3:"Lubricar el cabezal de retorno (10 g + 10 g).",
+    fnc_1:"Prestar atención a ruidos anómalos en el reductor.",
+    gen_1:"Apretar tuercas y tornillos.",
+    gen_2:"Cuadro eléctrico e inverter del triturador (si están instalados): limpiar el cartucho filtro principal (elemento exterior).",
+    sec_legend:"Leyenda",
+    leg_enu:"Grupo de potencia",
+    leg_feh:"Tolva de alimentación",
+    leg_hyd:"Instalación hidráulica",
+    leg_jcr:"Trituradora de mandíbulas",
+    leg_lsc:"Cinta lateral",
+    leg_lub:"Sistema de lubricación (manual o automático)",
+    leg_mag:"Separador magnético de cinta (opción)",
+    leg_mcl:"Cinta transportadora principal",
+    leg_tra:"Orugas",
+    leg_vif:"Alimentador vibrante",
+    leg_was:"Sistema de supresión de polvo"
+  },
+
+  de: { kicker:"Wartungsplan", page_title:"Wöchentliche Wartung — Keestrack",
+    sec_belt:"Förderbänder", sec_magnet:"Magnet", sec_crusher:"Brechkammer und Trichter",
+    sec_cleaning:"Reinigung", sec_lube:"Schmierung", sec_func:"Funktionsprüfungen", sec_general:"Allgemein",
+    note_if_installed:"— sofern installiert", note_no_autogrease:"— nur ohne automatisches Schmiersystem",
+    belt_1:"Sauberkeit und Drehung der Bandrollen und Rücklaufrollen prüfen.",
+    belt_2:"Bandzentrierung und Verschleiß der Abschürfgummi prüfen.",
+    belt_3:"Verschleiß der Abstreifer und den allgemeinen Zustand der Bänder prüfen.",
+    mag_1:"Sauberkeit und Drehung der Bandrollen prüfen.",
+    mag_2:"Bandverschleiß und Zentrierung prüfen.",
+    mag_3:"Verschleiß der Rutsche prüfen.",
+    cru_1:"Verschleißgrad und Befestigung der Komponenten an der JCR-Brechkammer, am FEH und VIF sowie an den Auslauftrichtern prüfen.",
+    cru_2:"Druckniveau am Rückzugzylinder visuell prüfen.",
+    cru_3:"Auf ungewöhnliche Geräusche während der Einstellungsverstellung achten.",
+    cru_4:"Gleichmäßigkeit des Verschleißes an der Kniehebelplatte prüfen.",
+    cln_1:"Maschine und Kühler mit Wasserstrahl oder Druckluft reinigen.",
+    cln_2:"Elemente am Entlüftungsventil der Wasserpumpe reinigen.",
+    cln_3:"Haldensensor (Stockpile) reinigen.",
+    cln_4:"Hydraulikblock reinigen — ausschließlich mit Druckluft.",
+    lub_1:"Alle 4 Lager schmieren (340 g pro Lager).",
+    lub_2:"Antriebskopf schmieren (10 g + 10 g).",
+    lub_3:"Umlenkkopf schmieren (10 g + 10 g).",
+    fnc_1:"Auf ungewöhnliche Geräusche aus dem Getriebe achten.",
+    gen_1:"Muttern und Schrauben nachziehen.",
+    gen_2:"Schaltschrank und Brecher-Frequenzumrichter (sofern installiert): Hauptfilterpatrone (Außenelement) reinigen.",
+    sec_legend:"Legende",
+    leg_enu:"Antriebsaggregat",
+    leg_feh:"Aufgabetrichter",
+    leg_hyd:"Hydraulikinstallation",
+    leg_jcr:"Backenbrecher",
+    leg_lsc:"Seitenförderer",
+    leg_lub:"Schmiersystem (manuell oder automatisch)",
+    leg_mag:"Magnetbandscheider (Option)",
+    leg_mcl:"Hauptförderband",
+    leg_tra:"Raupenfahrwerk",
+    leg_vif:"Vibrationsförderer",
+    leg_was:"Staubunterdrückungssystem"
+  },
+
+  fr: { kicker:"Plan de Maintenance", page_title:"Maintenance Hebdomadaire — Keestrack",
+    sec_belt:"Convoyeurs à bande", sec_magnet:"Aimant", sec_crusher:"Chambre de concassage et trémies",
+    sec_cleaning:"Nettoyage", sec_lube:"Lubrification", sec_func:"Contrôles fonctionnels", sec_general:"Général",
+    note_if_installed:"— si installé", note_no_autogrease:"— uniquement sans système de graissage automatique",
+    belt_1:"Vérifier la propreté et la rotation des rouleaux de bande et des rouleaux de retour.",
+    belt_2:"Vérifier le centrage de la bande et l'usure du caoutchouc de bordage.",
+    belt_3:"Vérifier l'usure des racleurs et l'état général des bandes.",
+    mag_1:"Vérifier la propreté et la rotation des rouleaux de bande.",
+    mag_2:"Vérifier l'usure et le centrage de la bande.",
+    mag_3:"Vérifier l'usure de la goulotte.",
+    cru_1:"Vérifier le niveau d'usure et le serrage des composants sur la chambre de concassage JCR, sur FEH et VIF et sur les trémies de décharge.",
+    cru_2:"Vérifier visuellement le niveau de pression sur le vérin de rétraction.",
+    cru_3:"Écouter les bruits anormaux lors du réglage du setting.",
+    cru_4:"Vérifier l'uniformité de l'usure sur la plaque toggle.",
+    cln_1:"Nettoyer la machine et les radiateurs au jet d'eau ou à l'air comprimé.",
+    cln_2:"Nettoyer les éléments de la vanne de purge de la pompe à eau.",
+    cln_3:"Nettoyer le capteur de stockage (stockpile).",
+    cln_4:"Nettoyer le bloc hydraulique — uniquement à l'air comprimé.",
+    lub_1:"Lubrifier les 4 paliers (340 g par palier).",
+    lub_2:"Lubrifier la tête motrice (10 g + 10 g).",
+    lub_3:"Lubrifier la tête de retour (10 g + 10 g).",
+    fnc_1:"Écouter les bruits anormaux du réducteur.",
+    gen_1:"Serrer écrous et boulons.",
+    gen_2:"Armoire électrique et variateur du concasseur (si installés) : nettoyer la cartouche filtre principale (élément extérieur).",
+    sec_legend:"Légende",
+    leg_enu:"Groupe de puissance",
+    leg_feh:"Trémie d'alimentation",
+    leg_hyd:"Installation hydraulique",
+    leg_jcr:"Concasseur à mâchoires",
+    leg_lsc:"Convoyeur latéral",
+    leg_lub:"Système de lubrification (manuel ou automatique)",
+    leg_mag:"Séparateur magnétique à bande (option)",
+    leg_mcl:"Convoyeur principal",
+    leg_tra:"Chenilles",
+    leg_vif:"Alimentateur vibrant",
+    leg_was:"Système d'abattement de poussière"
+  },
+
+  nl: { kicker:"Onderhoudsschema", page_title:"Wekelijks Onderhoud — Keestrack",
+    sec_belt:"Transportbanden", sec_magnet:"Magneet", sec_crusher:"Breekkamer en trechters",
+    sec_cleaning:"Reiniging", sec_lube:"Smering", sec_func:"Functionele controles", sec_general:"Algemeen",
+    note_if_installed:"— indien geïnstalleerd", note_no_autogrease:"— alleen zonder automatisch smeersysteem",
+    belt_1:"Controleer reinheid en rotatie van bandrollen en retourrollen.",
+    belt_2:"Controleer bandcentrering en slijtage van skirting-rubber.",
+    belt_3:"Controleer slijtage van schrapers en algemene staat van de banden.",
+    mag_1:"Controleer reinheid en rotatie van bandrollen.",
+    mag_2:"Controleer bandslijtage en centrering.",
+    mag_3:"Controleer slijtage van de stortkoker.",
+    cru_1:"Controleer slijtage en bevestiging van onderdelen op de JCR-breekkamer, op FEH en VIF en op de afvoertrechters.",
+    cru_2:"Controleer visueel het drukniveau op de retractiecilinder.",
+    cru_3:"Luister naar abnormale geluiden tijdens de setting-afstelling.",
+    cru_4:"Controleer uniformiteit van slijtage op de toggle plate.",
+    cln_1:"Reinig de machine en de koelers met waterstraal of perslucht.",
+    cln_2:"Reinig de elementen op de ontluchtingsklep van de waterpomp.",
+    cln_3:"Reinig de stockpile-sensor.",
+    cln_4:"Reinig het hydraulische blok — uitsluitend met perslucht.",
+    lub_1:"Smeer alle 4 lagers (340 g per lager).",
+    lub_2:"Smeer de aandrijfkop (10 g + 10 g).",
+    lub_3:"Smeer de retourkop (10 g + 10 g).",
+    fnc_1:"Luister naar abnormale geluiden uit de tandwielkast.",
+    gen_1:"Moeren en bouten aandraaien.",
+    gen_2:"Schakelkast en breker-omvormer (indien geïnstalleerd): reinig het hoofdfilterpatroon (buitenelement).",
+    sec_legend:"Legenda",
+    leg_enu:"Aggregaat",
+    leg_feh:"Aanvoertrechter",
+    leg_hyd:"Hydraulische installatie",
+    leg_jcr:"Kaakbreker",
+    leg_lsc:"Zijband",
+    leg_lub:"Smeersysteem (handmatig of automatisch)",
+    leg_mag:"Magnetische bandscheider (optie)",
+    leg_mcl:"Hoofdtransportband",
+    leg_tra:"Rupsbanden",
+    leg_vif:"Trilvoeder",
+    leg_was:"Stofbestrijdingssysteem"
+  },
+
+  pt: { kicker:"Plano de Manutenção", page_title:"Manutenção Semanal — Keestrack",
+    sec_belt:"Tapetes Transportadores", sec_magnet:"Íman", sec_crusher:"Câmara de Britagem e Tremonhas",
+    sec_cleaning:"Limpeza", sec_lube:"Lubrificação", sec_func:"Verificações Funcionais", sec_general:"Geral",
+    note_if_installed:"— se instalado", note_no_autogrease:"— apenas sem sistema de lubrificação automática",
+    belt_1:"Verificar a limpeza e a rotação dos rolos do tapete e dos rolos de retorno.",
+    belt_2:"Verificar a centragem do tapete e o desgaste da borracha de vedação.",
+    belt_3:"Verificar o desgaste dos raspadores e o estado geral dos tapetes.",
+    mag_1:"Verificar a limpeza e a rotação dos rolos do tapete.",
+    mag_2:"Verificar o desgaste e a centragem do tapete.",
+    mag_3:"Verificar o desgaste da calha.",
+    cru_1:"Verificar o nível de desgaste e a fixação dos componentes da câmara de britagem JCR, do FEH e VIF e das tremonhas de descarga.",
+    cru_2:"Verificar visualmente o nível de pressão no cilindro de retração.",
+    cru_3:"Escutar ruídos anómalos durante o ajuste do setting.",
+    cru_4:"Verificar a uniformidade do desgaste da placa toggle.",
+    cln_1:"Limpar a máquina e os radiadores com jato de água ou ar comprimido.",
+    cln_2:"Limpar os elementos da válvula de ventilação da bomba de água.",
+    cln_3:"Limpar o sensor de armazenamento (stockpile).",
+    cln_4:"Limpar o bloco hidráulico — apenas com ar comprimido.",
+    lub_1:"Lubrificar todos os 4 rolamentos (340 g por rolamento).",
+    lub_2:"Lubrificar a cabeça motriz (10 g + 10 g).",
+    lub_3:"Lubrificar a cabeça de retorno (10 g + 10 g).",
+    fnc_1:"Escutar ruídos anómalos do redutor.",
+    gen_1:"Apertar porcas e parafusos.",
+    gen_2:"Quadro elétrico e inversor do britador (se instalados): limpar o cartucho do filtro principal (elemento exterior).",
+    sec_legend:"Legenda",
+    leg_enu:"Grupo de potência",
+    leg_feh:"Tremonha de alimentação",
+    leg_hyd:"Instalação hidráulica",
+    leg_jcr:"Britador de maxilas",
+    leg_lsc:"Tapete lateral",
+    leg_lub:"Sistema de lubrificação (manual ou automático)",
+    leg_mag:"Separador magnético de tapete (opção)",
+    leg_mcl:"Tapete transportador principal",
+    leg_tra:"Lagartas",
+    leg_vif:"Alimentador vibratório",
+    leg_was:"Sistema de supressão de pó"
+  },
+
+  no: { kicker:"Vedlikeholdsplan", page_title:"Ukentlig vedlikehold — Keestrack",
+    sec_belt:"Båndtransportører", sec_magnet:"Magnet", sec_crusher:"Knusekammer og trakter",
+    sec_cleaning:"Rengjøring", sec_lube:"Smøring", sec_func:"Funksjonskontroller", sec_general:"Generelt",
+    note_if_installed:"— hvis installert", note_no_autogrease:"— kun uten automatisk smøresystem",
+    belt_1:"Kontroller renhet og rotasjon på båndruller og returruller.",
+    belt_2:"Kontroller båndsentrering og slitasje på skjørtgummi.",
+    belt_3:"Kontroller slitasje på skraper og generell tilstand på beltene.",
+    mag_1:"Kontroller renhet og rotasjon på båndruller.",
+    mag_2:"Kontroller båndslitasje og sentrering.",
+    mag_3:"Kontroller slitasje på sjakten.",
+    cru_1:"Kontroller slitasjegrad og festing av deler på JCR-knusekammer, på FEH og VIF og på utløpstrakter.",
+    cru_2:"Visuell kontroll av trykknivå på tilbaketrekkingssylinderen.",
+    cru_3:"Lytt etter unormale lyder under setting-justering.",
+    cru_4:"Kontroller jevnheten på slitasjen av toggle plate.",
+    cln_1:"Rengjør maskinen og kjølerne med vannstråle eller trykkluft.",
+    cln_2:"Rengjør elementene på lufteventilen til vannpumpen.",
+    cln_3:"Rengjør stockpile-sensoren.",
+    cln_4:"Rengjør hydraulikkblokken — kun med trykkluft.",
+    lub_1:"Smør alle 4 lagre (340 g per lager).",
+    lub_2:"Smør drivhode (10 g + 10 g).",
+    lub_3:"Smør returhode (10 g + 10 g).",
+    fnc_1:"Lytt etter unormale lyder fra girkassen.",
+    gen_1:"Trekk til muttere og bolter.",
+    gen_2:"Koblingsskap og knuser-inverter (hvis installert): rengjør hovedfilterpatron (ytre element).",
+    sec_legend:"Tegnforklaring",
+    leg_enu:"Kraftaggregat",
+    leg_feh:"Matetrakt",
+    leg_hyd:"Hydraulisk installasjon",
+    leg_jcr:"Kjeftknuser",
+    leg_lsc:"Sidebånd",
+    leg_lub:"Smøresystem (manuelt eller automatisk)",
+    leg_mag:"Magnetisk båndskiller (opsjon)",
+    leg_mcl:"Hovedbånd",
+    leg_tra:"Belter",
+    leg_vif:"Vibrasjonsmater",
+    leg_was:"Støvdempingssystem"
+  },
+
+  ro: { kicker:"Plan de Mentenanță", page_title:"Mentenanță Săptămânală — Keestrack",
+    sec_belt:"Benzi transportoare", sec_magnet:"Magnet", sec_crusher:"Camera de concasare și buncăre",
+    sec_cleaning:"Curățare", sec_lube:"Lubrifiere", sec_func:"Verificări funcționale", sec_general:"General",
+    note_if_installed:"— dacă este instalat", note_no_autogrease:"— doar fără sistem de lubrifiere automată",
+    belt_1:"Verificați curățenia și rotația rolelor benzii și a rolelor de retur.",
+    belt_2:"Verificați centrarea benzii și uzura cauciucului de etanșare.",
+    belt_3:"Verificați uzura raclorilor și starea generală a benzilor.",
+    mag_1:"Verificați curățenia și rotația rolelor benzii.",
+    mag_2:"Verificați uzura și centrarea benzii.",
+    mag_3:"Verificați uzura jgheabului.",
+    cru_1:"Verificați nivelul de uzură și fixarea componentelor camerei de concasare JCR, ale FEH și VIF și ale buncărelor de descărcare.",
+    cru_2:"Verificați vizual nivelul presiunii pe cilindrul de retragere.",
+    cru_3:"Ascultați eventualele zgomote anormale în timpul reglării setting-ului.",
+    cru_4:"Verificați uniformitatea uzurii pe placa toggle.",
+    cln_1:"Curățați mașina și radiatoarele cu jet de apă sau aer comprimat.",
+    cln_2:"Curățați elementele de pe supapa de aerisire a pompei de apă.",
+    cln_3:"Curățați senzorul de stocare (stockpile).",
+    cln_4:"Curățați blocul hidraulic — exclusiv cu aer comprimat.",
+    lub_1:"Lubrifiați toate cele 4 rulmenți (340 g per rulment).",
+    lub_2:"Lubrifiați capul de acționare (10 g + 10 g).",
+    lub_3:"Lubrifiați capul de retur (10 g + 10 g).",
+    fnc_1:"Ascultați eventualele zgomote anormale de la reductor.",
+    gen_1:"Strângeți piulițele și șuruburile.",
+    gen_2:"Tablou electric și invertor concasor (dacă sunt instalate): curățați cartușul filtrului principal (element exterior).",
+    sec_legend:"Legendă",
+    leg_enu:"Grup de putere",
+    leg_feh:"Buncăr de alimentare",
+    leg_hyd:"Instalație hidraulică",
+    leg_jcr:"Concasor cu fălci",
+    leg_lsc:"Bandă laterală",
+    leg_lub:"Sistem de lubrifiere (manual sau automat)",
+    leg_mag:"Separator magnetic cu bandă (opțiune)",
+    leg_mcl:"Banda transportoare principală",
+    leg_tra:"Șenile",
+    leg_vif:"Alimentator vibrant",
+    leg_was:"Sistem de reducere a prafului"
+  },
+
+  pl: { kicker:"Plan Konserwacji", page_title:"Konserwacja Tygodniowa — Keestrack",
+    sec_belt:"Przenośniki taśmowe", sec_magnet:"Magnes", sec_crusher:"Komora kruszenia i zasobniki",
+    sec_cleaning:"Czyszczenie", sec_lube:"Smarowanie", sec_func:"Kontrole funkcjonalne", sec_general:"Ogólne",
+    note_if_installed:"— jeśli zainstalowany", note_no_autogrease:"— tylko bez automatycznego systemu smarowania",
+    belt_1:"Sprawdź czystość i obrót rolek taśmy i rolek powrotnych.",
+    belt_2:"Sprawdź wyśrodkowanie taśmy i zużycie gumy uszczelniającej.",
+    belt_3:"Sprawdź zużycie zgarniaczy i ogólny stan taśm.",
+    mag_1:"Sprawdź czystość i obrót rolek taśmy.",
+    mag_2:"Sprawdź zużycie i wyśrodkowanie taśmy.",
+    mag_3:"Sprawdź zużycie zsypu.",
+    cru_1:"Sprawdź poziom zużycia i mocowania elementów na komorze kruszenia JCR, na FEH i VIF oraz na zasobnikach zsypowych.",
+    cru_2:"Wizualnie sprawdź poziom ciśnienia na cylindrze cofania.",
+    cru_3:"Nasłuchuj nieprawidłowych dźwięków podczas regulacji setting-u.",
+    cru_4:"Sprawdź równomierność zużycia na płycie toggle.",
+    cln_1:"Wyczyść maszynę i chłodnice strumieniem wody lub sprężonym powietrzem.",
+    cln_2:"Wyczyść elementy na zaworze odpowietrzającym pompy wody.",
+    cln_3:"Wyczyść czujnik stockpile.",
+    cln_4:"Wyczyść blok hydrauliczny — wyłącznie sprężonym powietrzem.",
+    lub_1:"Nasmaruj wszystkie 4 łożyska (340 g na łożysko).",
+    lub_2:"Nasmaruj głowicę napędową (10 g + 10 g).",
+    lub_3:"Nasmaruj głowicę powrotną (10 g + 10 g).",
+    fnc_1:"Nasłuchuj nieprawidłowych dźwięków z przekładni.",
+    gen_1:"Dokręć nakrętki i śruby.",
+    gen_2:"Szafa elektryczna i falownik kruszarki (jeśli zainstalowane): wyczyść główny wkład filtra (element zewnętrzny).",
+    sec_legend:"Legenda",
+    leg_enu:"Agregat zasilający",
+    leg_feh:"Zasobnik podający",
+    leg_hyd:"Instalacja hydrauliczna",
+    leg_jcr:"Kruszarka szczękowa",
+    leg_lsc:"Przenośnik boczny",
+    leg_lub:"System smarowania (ręczny lub automatyczny)",
+    leg_mag:"Separator magnetyczny taśmowy (opcja)",
+    leg_mcl:"Przenośnik główny",
+    leg_tra:"Gąsienice",
+    leg_vif:"Podajnik wibracyjny",
+    leg_was:"System odpylania"
+  },
+
+  cs: { kicker:"Plán údržby", page_title:"Týdenní údržba — Keestrack",
+    sec_belt:"Pásové dopravníky", sec_magnet:"Magnet", sec_crusher:"Drticí komora a zásobníky",
+    sec_cleaning:"Čištění", sec_lube:"Mazání", sec_func:"Funkční kontroly", sec_general:"Obecné",
+    note_if_installed:"— pokud je nainstalováno", note_no_autogrease:"— pouze bez automatického mazacího systému",
+    belt_1:"Zkontrolujte čistotu a otáčení válečků pásu a vratných válečků.",
+    belt_2:"Zkontrolujte vycentrování pásu a opotřebení těsnicí gumy.",
+    belt_3:"Zkontrolujte opotřebení stěračů a celkový stav pásů.",
+    mag_1:"Zkontrolujte čistotu a otáčení válečků pásu.",
+    mag_2:"Zkontrolujte opotřebení a vycentrování pásu.",
+    mag_3:"Zkontrolujte opotřebení skluzu.",
+    cru_1:"Zkontrolujte úroveň opotřebení a upevnění dílů na drticí komoře JCR, na FEH a VIF a na výsypných zásobnících.",
+    cru_2:"Vizuálně zkontrolujte úroveň tlaku na zatahovacím válci.",
+    cru_3:"Poslouchejte abnormální zvuky během seřizování settingu.",
+    cru_4:"Zkontrolujte rovnoměrnost opotřebení na toggle plate.",
+    cln_1:"Vyčistěte stroj a chladiče vodním paprskem nebo stlačeným vzduchem.",
+    cln_2:"Vyčistěte prvky na odvzdušňovacím ventilu vodního čerpadla.",
+    cln_3:"Vyčistěte stockpile senzor.",
+    cln_4:"Vyčistěte hydraulický blok — výhradně stlačeným vzduchem.",
+    lub_1:"Namažte všechna 4 ložiska (340 g na ložisko).",
+    lub_2:"Namažte hnací hlavu (10 g + 10 g).",
+    lub_3:"Namažte vratnou hlavu (10 g + 10 g).",
+    fnc_1:"Poslouchejte abnormální zvuky z převodovky.",
+    gen_1:"Dotáhněte matice a šrouby.",
+    gen_2:"Rozvaděč a měnič drtiče (pokud jsou nainstalovány): vyčistěte hlavní filtrační vložku (vnější prvek).",
+    sec_legend:"Legenda",
+    leg_enu:"Pohonný agregát",
+    leg_feh:"Násypka",
+    leg_hyd:"Hydraulická instalace",
+    leg_jcr:"Čelisťový drtič",
+    leg_lsc:"Boční dopravník",
+    leg_lub:"Mazací systém (manuální nebo automatický)",
+    leg_mag:"Magnetický pásový separátor (volitelné)",
+    leg_mcl:"Hlavní dopravník",
+    leg_tra:"Pásy",
+    leg_vif:"Vibrační podavač",
+    leg_was:"Systém potlačení prachu"
+  },
+
+  ru: { kicker:"График технического обслуживания", page_title:"Еженедельное обслуживание — Keestrack",
+    sec_belt:"Ленточные конвейеры", sec_magnet:"Магнит", sec_crusher:"Камера дробления и бункеры",
+    sec_cleaning:"Очистка", sec_lube:"Смазка", sec_func:"Функциональные проверки", sec_general:"Общее",
+    note_if_installed:"— если установлен", note_no_autogrease:"— только при отсутствии автоматической системы смазки",
+    belt_1:"Проверьте чистоту и вращение роликов ленты и возвратных роликов.",
+    belt_2:"Проверьте центровку ленты и износ уплотнительной резины.",
+    belt_3:"Проверьте износ скребков и общее состояние лент.",
+    mag_1:"Проверьте чистоту и вращение роликов ленты.",
+    mag_2:"Проверьте износ и центровку ленты.",
+    mag_3:"Проверьте износ желоба.",
+    cru_1:"Проверьте уровень износа и крепление деталей на камере дробления JCR, на FEH и VIF и на разгрузочных бункерах.",
+    cru_2:"Визуально проверьте уровень давления на цилиндре втягивания.",
+    cru_3:"Прислушивайтесь к посторонним шумам во время регулировки настройки.",
+    cru_4:"Проверьте равномерность износа на toggle plate.",
+    cln_1:"Очистите машину и радиаторы струёй воды или сжатым воздухом.",
+    cln_2:"Очистите элементы воздушного клапана водяного насоса.",
+    cln_3:"Очистите датчик stockpile.",
+    cln_4:"Очистите гидравлический блок — исключительно сжатым воздухом.",
+    lub_1:"Смажьте все 4 подшипника (340 г на подшипник).",
+    lub_2:"Смажьте приводную головку (10 г + 10 г).",
+    lub_3:"Смажьте обратную головку (10 г + 10 г).",
+    fnc_1:"Прислушивайтесь к посторонним шумам из редуктора.",
+    gen_1:"Подтяните гайки и болты.",
+    gen_2:"Электрошкаф и инвертор дробилки (если установлены): очистите основной фильтрующий картридж (внешний элемент).",
+    sec_legend:"Условные обозначения",
+    leg_enu:"Силовой агрегат",
+    leg_feh:"Загрузочный бункер",
+    leg_hyd:"Гидравлическая установка",
+    leg_jcr:"Щековая дробилка",
+    leg_lsc:"Боковой конвейер",
+    leg_lub:"Система смазки (ручная или автоматическая)",
+    leg_mag:"Магнитный ленточный сепаратор (опция)",
+    leg_mcl:"Главный конвейер",
+    leg_tra:"Гусеницы",
+    leg_vif:"Вибрационный питатель",
+    leg_was:"Система пылеподавления"
+  },
+
+  zh: { kicker:"维护计划", page_title:"每周维护 — Keestrack",
+    sec_belt:"皮带输送机", sec_magnet:"磁铁", sec_crusher:"破碎腔与料斗",
+    sec_cleaning:"清洁", sec_lube:"润滑", sec_func:"功能检查", sec_general:"通用",
+    note_if_installed:"— 如已安装", note_no_autogrease:"— 仅在没有自动润滑系统时",
+    belt_1:"检查皮带托辊和回程托辊的清洁度及转动情况。",
+    belt_2:"检查皮带对中和挡边胶的磨损情况。",
+    belt_3:"检查刮板的磨损和皮带的整体状况。",
+    mag_1:"检查皮带托辊的清洁度和转动情况。",
+    mag_2:"检查皮带的磨损和对中情况。",
+    mag_3:"检查溜槽的磨损情况。",
+    cru_1:"检查 JCR 破碎腔、FEH 和 VIF 以及卸料斗上零件的磨损程度和紧固情况。",
+    cru_2:"目视检查回缩油缸的压力水平。",
+    cru_3:"在调整 setting 期间注意是否有异常声音。",
+    cru_4:"检查肘板磨损的均匀性。",
+    cln_1:"用水枪或压缩空气清洁机器和冷却器。",
+    cln_2:"清洁水泵排气阀上的部件。",
+    cln_3:"清洁料堆 (stockpile) 传感器。",
+    cln_4:"清洁液压块 — 仅限使用压缩空气。",
+    lub_1:"润滑所有 4 个轴承 (每个轴承 340 克)。",
+    lub_2:"润滑驱动头 (10 克 + 10 克)。",
+    lub_3:"润滑回程头 (10 克 + 10 克)。",
+    fnc_1:"注意减速箱是否有异常声音。",
+    gen_1:"拧紧螺母和螺栓。",
+    gen_2:"电气柜及破碎机变频器(如已安装):清洁主滤芯(外部元件)。",
+    sec_legend:"图例",
+    leg_enu:"动力机组",
+    leg_feh:"给料斗",
+    leg_hyd:"液压装置",
+    leg_jcr:"颚式破碎机",
+    leg_lsc:"侧输送机",
+    leg_lub:"润滑系统 (手动或自动)",
+    leg_mag:"磁性带式分离器 (选配)",
+    leg_mcl:"主输送机",
+    leg_tra:"履带",
+    leg_vif:"振动给料机",
+    leg_was:"除尘系统"
+  },
+
+  hi: { kicker:"रखरखाव कार्यक्रम", page_title:"साप्ताहिक रखरखाव — Keestrack",
+    sec_belt:"बेल्ट कन्वेयर", sec_magnet:"चुंबक", sec_crusher:"क्रशिंग चेम्बर और हॉपर",
+    sec_cleaning:"सफाई", sec_lube:"स्नेहन", sec_func:"कार्यात्मक जाँच", sec_general:"सामान्य",
+    note_if_installed:"— यदि स्थापित हो", note_no_autogrease:"— केवल बिना स्वचालित स्नेहन प्रणाली के",
+    belt_1:"बेल्ट रोलर्स और रिटर्न रोलर्स की सफाई और घूर्णन की जाँच करें।",
+    belt_2:"बेल्ट केंद्रीकरण और स्कर्टिंग रबर की घिसावट की जाँच करें।",
+    belt_3:"स्क्रेपर्स की घिसावट और बेल्ट्स की समग्र स्थिति की जाँच करें।",
+    mag_1:"बेल्ट रोलर्स की सफाई और घूर्णन की जाँच करें।",
+    mag_2:"बेल्ट घिसावट और केंद्रीकरण की जाँच करें।",
+    mag_3:"च्यूट की घिसावट की जाँच करें।",
+    cru_1:"JCR क्रशिंग चेम्बर, FEH और VIF तथा डिस्चार्ज हॉपर्स पर पुर्ज़ों के घिसाव स्तर और कसावट की जाँच करें।",
+    cru_2:"रिट्रैक्शन सिलेंडर पर दबाव स्तर की दृष्टि से जाँच करें।",
+    cru_3:"सेटिंग समायोजन के दौरान असामान्य आवाज़ों को सुनें।",
+    cru_4:"टॉगल प्लेट पर घिसावट की एकरूपता की जाँच करें।",
+    cln_1:"मशीन और कूलर्स को पानी की धार या संपीड़ित हवा से साफ करें।",
+    cln_2:"वॉटर पंप के वेंट वाल्व के तत्वों को साफ करें।",
+    cln_3:"स्टॉकपाइल सेंसर को साफ करें।",
+    cln_4:"हाइड्रोलिक ब्लॉक को साफ करें — केवल संपीड़ित हवा से।",
+    lub_1:"सभी 4 बेयरिंग्स को स्नेहन दें (प्रति बेयरिंग 340 ग्राम)।",
+    lub_2:"ड्राइव हेड को स्नेहन दें (10 ग्राम + 10 ग्राम)।",
+    lub_3:"रिटर्न हेड को स्नेहन दें (10 ग्राम + 10 ग्राम)।",
+    fnc_1:"गियरबॉक्स से असामान्य आवाज़ों को सुनें।",
+    gen_1:"नट और बोल्ट कसें।",
+    gen_2:"इलेक्ट्रोबॉक्स और क्रशर इन्वर्टर (यदि स्थापित हो): मुख्य (बाहरी) फ़िल्टर कार्ट्रिज को साफ करें।",
+    sec_legend:"विवरण",
+    leg_enu:"पावर यूनिट",
+    leg_feh:"फीडर हॉपर",
+    leg_hyd:"हाइड्रोलिक स्थापना",
+    leg_jcr:"जॉ क्रशर",
+    leg_lsc:"साइड कन्वेयर",
+    leg_lub:"स्नेहन प्रणाली (मैनुअल या स्वचालित)",
+    leg_mag:"चुंबकीय बेल्ट विभाजक (विकल्प)",
+    leg_mcl:"मुख्य कन्वेयर",
+    leg_tra:"ट्रैक्स",
+    leg_vif:"कंपन फीडर",
+    leg_was:"धूल दमन प्रणाली"
+  },
+
+  ar: { kicker:"جدول الصيانة", page_title:"الصيانة الأسبوعية — Keestrack",
+    sec_belt:"السيور الناقلة", sec_magnet:"المغناطيس", sec_crusher:"غرفة التكسير والقوادس",
+    sec_cleaning:"التنظيف", sec_lube:"التزييت", sec_func:"الفحوصات الوظيفية", sec_general:"عام",
+    note_if_installed:"— إذا كان مركبًا", note_no_autogrease:"— فقط في حال عدم وجود نظام تشحيم آلي",
+    belt_1:"افحص نظافة ودوران بكرات السير وبكرات العودة.",
+    belt_2:"افحص توسيط السير وتآكل مطاط التحجيب.",
+    belt_3:"افحص تآكل المكاشط والحالة العامة للسيور.",
+    mag_1:"افحص نظافة ودوران بكرات السير.",
+    mag_2:"افحص تآكل السير وتوسيطه.",
+    mag_3:"افحص تآكل المزلق.",
+    cru_1:"افحص مستوى التآكل وإحكام تثبيت القطع على غرفة التكسير JCR، وعلى FEH وVIF، وعلى قوادس التفريغ.",
+    cru_2:"افحص بصريًا مستوى الضغط على أسطوانة التراجع.",
+    cru_3:"أنصت إلى الأصوات غير الطبيعية أثناء ضبط الإعداد.",
+    cru_4:"افحص انتظام التآكل على لوح التوغل (toggle plate).",
+    cln_1:"نظّف الآلة والمبردات بتيار ماء أو هواء مضغوط.",
+    cln_2:"نظّف عناصر صمام التنفيس على مضخة الماء.",
+    cln_3:"نظّف مستشعر التكدس (stockpile).",
+    cln_4:"نظّف الكتلة الهيدروليكية — بالهواء المضغوط فقط.",
+    lub_1:"زيّت جميع المحامل الأربعة (340 جم لكل محمل).",
+    lub_2:"زيّت رأس الإدارة (10 جم + 10 جم).",
+    lub_3:"زيّت رأس العودة (10 جم + 10 جم).",
+    fnc_1:"أنصت إلى الأصوات غير الطبيعية من علبة التروس.",
+    gen_1:"اربط الصواميل والبراغي.",
+    gen_2:"صندوق الكهرباء وعاكس الكسارة (إذا كانا مركبين): نظّف خرطوشة الفلتر الرئيسية (العنصر الخارجي).",
+    sec_legend:"وسيلة الإيضاح",
+    leg_enu:"مجموعة القدرة",
+    leg_feh:"قادوس التغذية",
+    leg_hyd:"التركيب الهيدروليكي",
+    leg_jcr:"كسارة فكية",
+    leg_lsc:"السير الجانبي",
+    leg_lub:"نظام التزييت (يدوي أو آلي)",
+    leg_mag:"فاصل مغناطيسي شريطي (خيار)",
+    leg_mcl:"السير الناقل الرئيسي",
+    leg_tra:"الجنازير",
+    leg_vif:"مغذٍ اهتزازي",
+    leg_was:"نظام كبح الغبار"
+  },
+
+  he: { kicker:"תוכנית תחזוקה", page_title:"תחזוקה שבועית — Keestrack",
+    sec_belt:"מסועי רצועה", sec_magnet:"מגנט", sec_crusher:"תא הריסוק ומשפכים",
+    sec_cleaning:"ניקוי", sec_lube:"סיכה", sec_func:"בדיקות תפקודיות", sec_general:"כללי",
+    note_if_installed:"— אם מותקן", note_no_autogrease:"— רק ללא מערכת סיכה אוטומטית",
+    belt_1:"בדוק את ניקיון וסיבוב גלילי הרצועה וגלילי החזרה.",
+    belt_2:"בדוק את מירכוז הרצועה ובלאי גומיית האטימה.",
+    belt_3:"בדוק את בלאי המגרדים ואת המצב הכללי של הרצועות.",
+    mag_1:"בדוק את ניקיון וסיבוב גלילי הרצועה.",
+    mag_2:"בדוק את בלאי הרצועה ומירכוזה.",
+    mag_3:"בדוק את בלאי המגלשה.",
+    cru_1:"בדוק את רמת הבלאי וההידוק של החלקים בתא הריסוק JCR, ב-FEH וב-VIF ובמשפכי הפריקה.",
+    cru_2:"בדוק חזותית את רמת הלחץ במצור ההיסוט.",
+    cru_3:"האזן לרעשים חריגים במהלך כיוון ה-setting.",
+    cru_4:"בדוק את אחידות הבלאי של ה-toggle plate.",
+    cln_1:"נקה את המכונה ואת המקררים בסילון מים או באוויר דחוס.",
+    cln_2:"נקה את הרכיבים בשסתום האוורור של משאבת המים.",
+    cln_3:"נקה את חיישן ה-stockpile.",
+    cln_4:"נקה את הבלוק ההידראולי — באוויר דחוס בלבד.",
+    lub_1:"סוך את כל 4 המיסבים (340 גרם למיסב).",
+    lub_2:"סוך את ראש ההנעה (10 גרם + 10 גרם).",
+    lub_3:"סוך את ראש ההחזרה (10 גרם + 10 גרם).",
+    fnc_1:"האזן לרעשים חריגים מתיבת ההילוכים.",
+    gen_1:"הדק אומים וברגים.",
+    gen_2:"ארון חשמל ומהפך מכתש (אם מותקנים): נקה את מחסנית הסינון הראשית (אלמנט חיצוני).",
+    sec_legend:"מקרא",
+    leg_enu:"יחידת כוח",
+    leg_feh:"משפך הזנה",
+    leg_hyd:"התקנה הידראולית",
+    leg_jcr:"מכתש לסתות",
+    leg_lsc:"מסוע צד",
+    leg_lub:"מערכת סיכה (ידנית או אוטומטית)",
+    leg_mag:"מפריד מגנטי רצועה (אופציה)",
+    leg_mcl:"מסוע ראשי",
+    leg_tra:"זחלים",
+    leg_vif:"מזין רטטי",
+    leg_was:"מערכת דיכוי אבק"
+  }
+};
+
+const NEW_KEYS = {"en": {"model_select_title": "Select Machine Model", "model_select_sub": "Choose the machine to display its weekly maintenance schedule", "change_model": "Change model", "coming_soon": "Maintenance schedule in preparation", "coming_soon_sub": "The data for this model has not been entered yet.", "tag_std": "standard timing", "qty": "Qty", "cln_air": "Clean the main air-filter cartridge (outer element).", "cln_cond": "Drain condensate from the tanks and from the water/fuel separator filter.", "cln_was": "Clean the water-pump filter.", "fnc_css": "Listen for abnormal noises during CSS adjustment.", "fnc_toggle": "Check wear uniformity of the toggle plate.", "lub_flag": "Manually lubricate the flag bearing.", "lub_osc": "Manually lubricate the oscillator bearings.", "lub_lsc_heads": "Manually lubricate the conveyor heads.", "lub_mcl_drive": "Manually lubricate the drive head.", "lub_vif_shaft": "Manually lubricate the shaft bearings."}, "it": {"model_select_title": "Seleziona Modello Macchina", "model_select_sub": "Scegli la macchina per visualizzarne il piano di manutenzione settimanale", "change_model": "Cambia modello", "coming_soon": "Piano di manutenzione in preparazione", "coming_soon_sub": "I dati per questo modello non sono ancora stati inseriti.", "tag_std": "tempistica standard", "qty": "Q.tà", "cln_air": "Pulire la cartuccia del filtro aria principale (elemento esterno).", "cln_cond": "Scaricare la condensa dai serbatoi e dal filtro separatore acqua/gasolio.", "cln_was": "Pulire il filtro della pompa acqua.", "fnc_css": "Ascoltare l'eventuale presenza di rumori anomali durante la regolazione CSS.", "fnc_toggle": "Verificare l'uniformità di usura della piastra ginocchiera.", "lub_flag": "Lubrificare manualmente il cuscinetto bandiera.", "lub_osc": "Lubrificare manualmente i cuscinetti oscillatore.", "lub_lsc_heads": "Lubrificare manualmente le testate dei nastri.", "lub_mcl_drive": "Lubrificare manualmente la testata motore.", "lub_vif_shaft": "Lubrificare manualmente i cuscinetti alberi."}, "es": {"model_select_title": "Seleccionar Modelo de Máquina", "model_select_sub": "Elija la máquina para ver su plan de mantenimiento semanal", "change_model": "Cambiar modelo", "coming_soon": "Plan de mantenimiento en preparación", "coming_soon_sub": "Los datos de este modelo aún no se han introducido.", "tag_std": "tiempo estándar", "qty": "Cant.", "cln_air": "Limpiar el cartucho del filtro de aire principal (elemento exterior).", "cln_cond": "Drenar el condensado de los depósitos y del filtro separador agua/gasóleo.", "cln_was": "Limpiar el filtro de la bomba de agua.", "fnc_css": "Prestar atención a ruidos anómalos durante el ajuste CSS.", "fnc_toggle": "Comprobar la uniformidad del desgaste de la placa de rodillera.", "lub_flag": "Lubricar manualmente el rodamiento de la bandera.", "lub_osc": "Lubricar manualmente los rodamientos del oscilador.", "lub_lsc_heads": "Lubricar manualmente los cabezales de las cintas.", "lub_mcl_drive": "Lubricar manualmente el cabezal motriz.", "lub_vif_shaft": "Lubricar manualmente los rodamientos de los ejes."}, "de": {"model_select_title": "Maschinenmodell auswählen", "model_select_sub": "Wählen Sie die Maschine, um deren wöchentlichen Wartungsplan anzuzeigen", "change_model": "Modell wechseln", "coming_soon": "Wartungsplan in Vorbereitung", "coming_soon_sub": "Die Daten für dieses Modell wurden noch nicht eingegeben.", "tag_std": "Standardintervall", "qty": "Menge", "cln_air": "Hauptluftfilterpatrone (Außenelement) reinigen.", "cln_cond": "Kondensat aus den Tanks und aus dem Wasser-/Kraftstoffabscheiderfilter ablassen.", "cln_was": "Filter der Wasserpumpe reinigen.", "fnc_css": "Bei der CSS-Einstellung auf ungewöhnliche Geräusche achten.", "fnc_toggle": "Verschleißgleichmäßigkeit der Kniehebelplatte prüfen.", "lub_flag": "Das Fahnenlager manuell schmieren.", "lub_osc": "Die Oszillatorlager manuell schmieren.", "lub_lsc_heads": "Die Förderbandköpfe manuell schmieren.", "lub_mcl_drive": "Den Antriebskopf manuell schmieren.", "lub_vif_shaft": "Die Wellenlager manuell schmieren."}, "fr": {"model_select_title": "Sélectionner le Modèle de Machine", "model_select_sub": "Choisissez la machine pour afficher son plan de maintenance hebdomadaire", "change_model": "Changer de modèle", "coming_soon": "Plan de maintenance en préparation", "coming_soon_sub": "Les données de ce modèle n'ont pas encore été saisies.", "tag_std": "intervalle standard", "qty": "Qté", "cln_air": "Nettoyer la cartouche du filtre à air principal (élément extérieur).", "cln_cond": "Purger le condensat des réservoirs et du filtre séparateur eau/gazole.", "cln_was": "Nettoyer le filtre de la pompe à eau.", "fnc_css": "Écouter les bruits anormaux lors du réglage CSS.", "fnc_toggle": "Vérifier l'uniformité de l'usure de la plaque de genouillère.", "lub_flag": "Lubrifier manuellement le palier du drapeau.", "lub_osc": "Lubrifier manuellement les paliers de l'oscillateur.", "lub_lsc_heads": "Lubrifier manuellement les têtes des convoyeurs.", "lub_mcl_drive": "Lubrifier manuellement la tête motrice.", "lub_vif_shaft": "Lubrifier manuellement les paliers des arbres."}};
+
+// ---- B3h maintenance schedule (40h / weekly) ----
+const SECTIONS_B3H = [
+  { num:"01", title:"sec_belt", items:[
+     { i18n:"belt_1" },
+     { i18n:"belt_2" },
+     { i18n:"belt_3" }
+  ]},
+  { num:"02", title:"sec_magnet", note:"note_if_installed", items:[
+     { i18n:"mag_1", tag:"MAG" },
+     { i18n:"mag_2", tag:"MAG" },
+     { i18n:"mag_3", tag:"MAG" }
+  ]},
+  { num:"03", title:"sec_crusher", items:[
+     { i18n:"cru_1" },
+     { i18n:"fnc_css", tag:"JCR" },
+     { i18n:"fnc_toggle", tag:"JCR" }
+  ]},
+  { num:"04", title:"sec_cleaning", items:[
+     { i18n:"cln_air", note:"tag_std" },
+     { i18n:"cln_cond", note:"tag_std" },
+     { i18n:"cln_1" },
+     { i18n:"cln_was", tag:"WAS" },
+     { i18n:"cln_3", tag:"MCL", note:"note_if_installed" },
+     { i18n:"cln_4", tag:"HYD" }
+  ]},
+  { num:"05", title:"sec_lube", note:"note_no_autogrease", items:[
+     { i18n:"lub_flag",      tag:"JCR", qty:"5g (2x)" },
+     { i18n:"lub_osc",       tag:"JCR", qty:"450g (2x)" },
+     { i18n:"lub_lsc_heads", tag:"LSC", qty:"10g (4x)" },
+     { i18n:"lub_mcl_drive", tag:"MCL", qty:"25g (2x)" },
+     { i18n:"lub_vif_shaft", tag:"VIF", qty:"50g (2x)" }
+  ]},
+  { num:"06", title:"sec_general", items:[
+     { i18n:"gen_1" }
+  ]},
+  { num:"07", title:"sec_legend", legend:true, items:[
+     {tag:"ENU", i18n:"leg_enu"},
+     {tag:"FEH", i18n:"leg_feh"},
+     {tag:"HYD", i18n:"leg_hyd"},
+     {tag:"JCR", i18n:"leg_jcr"},
+     {tag:"LSC", i18n:"leg_lsc"},
+     {tag:"LUB", i18n:"leg_lub"},
+     {tag:"MAG", i18n:"leg_mag"},
+     {tag:"MCL", i18n:"leg_mcl"},
+     {tag:"TRA", i18n:"leg_tra"},
+     {tag:"VIF", i18n:"leg_vif"},
+     {tag:"WAS", i18n:"leg_was"}
+  ]}
+];
+
+// ===== Machine models =====
+// Each model lists its sections. Section = {key:i18nKey for title, note?:i18nKey, items:[...]}
+// item = { i18n:key, tag?:"JCR", qty?:"5g (2x)", note?:"tag_std" }
+// pending:true => show "coming soon" placeholder.
+const MODELS = [
+  { id:"B3h", elec:false, ready:true,  sections: SECTIONS_B3H },
+  { id:"B3v", elec:false, ready:false },
+  { id:"B4h", elec:false, ready:false },
+  { id:"B5h", elec:false, ready:false },
+  { id:"B7h", elec:false, ready:false }
+];
+
+
+// Merge NEW_KEYS into T (English fallback for languages without explicit new keys)
+Object.keys(T).forEach(code => {
+  const base = (NEW_KEYS[code] || {});
+  const en   = NEW_KEYS.en;
+  Object.keys(en).forEach(k => {
+    if (T[code][k] === undefined) {
+      T[code][k] = (base[k] !== undefined ? base[k] : en[k]);
+    }
+  });
+});
+
+// Supplementary header/footer strings (interval/print/doc_ref) — fallback to EN
+const T_EXTRA = {
+  en:{interval:"40 h · Weekly",print:"Print / PDF",doc_ref:"Maintenance schedule · 40 h"},
+  it:{interval:"40 h · Settimanale",print:"Stampa / PDF",doc_ref:"Piano di manutenzione · 40 h"},
+  es:{interval:"40 h · Semanal",print:"Imprimir / PDF",doc_ref:"Plan de mantenimiento · 40 h"},
+  de:{interval:"40 h · Wöchentlich",print:"Drucken / PDF",doc_ref:"Wartungsplan · 40 h"},
+  fr:{interval:"40 h · Hebdomadaire",print:"Imprimer / PDF",doc_ref:"Plan de maintenance · 40 h"},
+  nl:{interval:"40 u · Wekelijks",print:"Afdrukken / PDF",doc_ref:"Onderhoudsschema · 40 u"},
+  pt:{interval:"40 h · Semanal",print:"Imprimir / PDF",doc_ref:"Plano de manutenção · 40 h"},
+  no:{interval:"40 t · Ukentlig",print:"Skriv ut / PDF",doc_ref:"Vedlikeholdsplan · 40 t"},
+  ro:{interval:"40 h · Săptămânal",print:"Imprimare / PDF",doc_ref:"Plan de mentenanță · 40 h"},
+  pl:{interval:"40 h · Tygodniowo",print:"Drukuj / PDF",doc_ref:"Plan konserwacji · 40 h"},
+  cs:{interval:"40 h · Týdně",print:"Tisk / PDF",doc_ref:"Plán údržby · 40 h"},
+  ru:{interval:"40 ч · Еженедельно",print:"Печать / PDF",doc_ref:"График ТО · 40 ч"},
+  zh:{interval:"40 小时 · 每周",print:"打印 / PDF",doc_ref:"维护计划 · 40 小时"},
+  hi:{interval:"40 घंटे · साप्ताहिक",print:"प्रिंट / PDF",doc_ref:"रखरखाव कार्यक्रम · 40 घंटे"},
+  ar:{interval:"40 ساعة · أسبوعي",print:"طباعة / PDF",doc_ref:"جدول الصيانة · 40 ساعة"}
+};
+Object.keys(T).forEach(code => {
+  const ex = T_EXTRA[code] || {};
+  ['interval','print','doc_ref'].forEach(k => {
+    if (T[code][k] === undefined) T[code][k] = (ex[k] !== undefined ? ex[k] : T_EXTRA.en[k]);
+  });
+});
+
+// ---------- DOM refs ----------
+const modelScreen = document.getElementById('modelScreen');
+const appShell    = document.getElementById('appShell');
+const modelGrid   = document.getElementById('modelGrid');
+const headerModel = document.getElementById('headerModel');
+const footModel   = document.getElementById('footModel');
+const pillName    = document.getElementById('pillName');
+const modelPill   = document.getElementById('modelPill');
+
+const langBtn     = document.getElementById('langBtn');
+const langPanel   = document.getElementById('langPanel');
+const currentFlag = document.getElementById('currentFlag');
+const currentName = document.getElementById('currentName');
+const mainContent = document.getElementById('mainContent');
+
+let currentLang  = 'en';
+let currentModel = null;
+
+// ---------- helpers ----------
+function modelLabelHTML(id){
+  // turn trailing letter into styled suffix, e.g. B3h -> B3<span>h</span>
+  const m = id.match(/^([A-Za-z]+\d+)([a-z])$/);
+  if (m) return m[1] + '<span class="elec">' + m[2] + '</span>';
+  return id;
+}
+
+// ---------- build model selection cards ----------
+MODELS.forEach(mod => {
+  const card = document.createElement('button');
+  card.type = 'button';
+  card.className = 'model-card' + (mod.ready ? '' : ' pending');
+  card.setAttribute('data-model', mod.id);
+  const tagText = mod.ready ? '40 h · Weekly' : 'coming_soon_tag';
+  card.innerHTML =
+    '<span class="mc-name">' + modelLabelHTML(mod.id) + '</span>' +
+    '<span class="mc-tag" data-modtag="' + (mod.ready?'ready':'pending') + '"></span>';
+  card.onclick = () => selectModel(mod.id);
+  modelGrid.appendChild(card);
+});
+
+function refreshCardTags(){
+  const dict = T[currentLang] || T.en;
+  document.querySelectorAll('.model-card').forEach(c => {
+    const tag = c.querySelector('.mc-tag');
+    const state = tag.getAttribute('data-modtag');
+    tag.textContent = (state === 'ready') ? (dict.interval || '40 h · Weekly')
+                                          : (dict.coming_soon || 'In preparation');
+  });
+}
+
+// ---------- language dropdown ----------
+LANGS.forEach(l => {
+  const opt = document.createElement('button');
+  opt.type = 'button';
+  opt.className = 'lang-option';
+  opt.setAttribute('data-lang', l.code);
+  opt.setAttribute('role', 'option');
+  opt.innerHTML = '<span class="lang-flag">' + l.flag + '</span><span>' + l.label + '</span>';
+  opt.onclick = () => { setLang(l.code); closePanel(); };
+  langPanel.appendChild(opt);
+});
+function openPanel(){ langPanel.classList.add('open'); langBtn.classList.add('open'); langBtn.setAttribute('aria-expanded','true'); }
+function closePanel(){ langPanel.classList.remove('open'); langBtn.classList.remove('open'); langBtn.setAttribute('aria-expanded','false'); }
+langBtn.onclick = (e) => { e.stopPropagation(); langPanel.classList.contains('open') ? closePanel() : openPanel(); };
+document.addEventListener('click', (e) => { if (!e.target.closest('.lang-selector')) closePanel(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
+
+// ---------- render maintenance content for a model ----------
+function renderModel(mod){
+  const dict = T[currentLang] || T.en;
+  mainContent.innerHTML = '';
+
+  if (!mod.ready || !mod.sections){
+    const cs = document.createElement('div');
+    cs.className = 'coming-soon';
+    cs.innerHTML =
+      '<div class="cs-ico">🛠️</div>' +
+      '<h2>' + (dict.coming_soon || 'Maintenance schedule in preparation') + '</h2>' +
+      '<p>' + (dict.coming_soon_sub || '') + '</p>';
+    mainContent.appendChild(cs);
+    return;
+  }
+
+  mod.sections.forEach(sec => {
+    const section = document.createElement('section');
+    section.className = 'section';
+
+    const head = document.createElement('div');
+    head.className = 'section-header';
+    head.innerHTML =
+      '<span class="section-num">' + sec.num + '</span>' +
+      '<h2 class="section-title">' + (dict[sec.title] || sec.title) + '</h2>' +
+      (sec.note ? '<span class="section-note">' + (dict[sec.note] || sec.note) + '</span>' : '');
+    section.appendChild(head);
+
+    const ul = document.createElement('ul');
+    ul.className = sec.legend ? 'legend' : 'items';
+
+    sec.items.forEach(it => {
+      const li = document.createElement('li');
+      let html = '';
+      if (it.tag) html += '<span class="tag">' + it.tag + '</span>';
+      html += '<span>' + (dict[it.i18n] || it.i18n) + '</span>';
+      if (it.note) html += ' <span class="li-note">— ' + (dict[it.note]||it.note).replace(/^—\s*/,'') + '</span>';
+      if (it.qty)  html += '<span class="qty-badge">' + it.qty + '</span>';
+      li.innerHTML = html;
+      ul.appendChild(li);
+    });
+
+    section.appendChild(ul);
+    mainContent.appendChild(section);
+  });
+}
+
+// ---------- select / change model ----------
+function selectModel(id){
+  const mod = MODELS.find(m => m.id === id);
+  if (!mod) return;
+  currentModel = mod;
+  headerModel.innerHTML = modelLabelHTML(mod.id);
+  pillName.innerHTML   = modelLabelHTML(mod.id).replace(/class="elec"/g,'class="mp-elec"');
+  footModel.innerHTML  = modelLabelHTML(mod.id);
+  modelScreen.classList.add('hidden');
+  appShell.classList.remove('hidden');
+  renderModel(mod);
+  applyI18n();
+  const dict = T[currentLang] || T.en;
+  document.title = (dict.page_title || 'Weekly Maintenance — Keestrack') + ' ' + mod.id;
+  window.scrollTo(0,0);
+}
+function showModelScreen(){
+  appShell.classList.add('hidden');
+  modelScreen.classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+modelPill.onclick = showModelScreen;
+
+// ---------- i18n apply ----------
+function applyI18n(){
+  const dict = T[currentLang] || T.en;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) el.textContent = dict[key];
+  });
+  refreshCardTags();
+}
+
+function setLang(code){
+  const lang = LANGS.find(l => l.code === code);
+  if (!lang) return;
+  currentLang = code;
+  document.documentElement.lang = code;
+  mainContent.dir = lang.dir;
+
+  // re-render current model so dynamic content follows language + dir
+  if (currentModel) renderModel(currentModel);
+  applyI18n();
+
+  currentFlag.textContent = lang.flag;
+  currentName.textContent = lang.label;
+  document.querySelectorAll('.lang-option').forEach(o => {
+    o.classList.toggle('active', o.getAttribute('data-lang') === code);
+  });
+  const dict = T[code] || T.en;
+  const modSuffix = currentModel ? (' ' + currentModel.id) : '';
+  document.title = (dict.page_title || 'Weekly Maintenance — Keestrack') + modSuffix;
+}
+
+const printBtn = document.getElementById('printBtn');
+if (printBtn) printBtn.onclick = () => window.print();
+
+// init
+setLang('en');
+
+</script>
+</body>
+</html>
