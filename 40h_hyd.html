@@ -19,6 +19,7 @@
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; }
+  html { scroll-padding-top: 8px; -webkit-text-size-adjust: 100%; }
 
   body {
     font-family: "Ubuntu", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -71,7 +72,7 @@
     letter-spacing: 0.3px;
   }
   .brand-text h1 .elec {
-    color: #00E676;
+    color: var(--orange);
     font-weight: 800;
   }
 
@@ -423,6 +424,7 @@
   /* ===== Model selection screen ===== */
   #modelScreen {
     min-height: 100vh;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -431,6 +433,33 @@
     background: var(--paper);
   }
   #modelScreen.hidden { display: none; }
+
+  /* Language selector on the model-selection screen (light background) */
+  .ms-lang {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 30;
+  }
+  .ms-lang .lang-selector { width: auto; max-width: none; }
+  .ms-lang .lang-btn {
+    width: auto;
+    min-width: 150px;
+    background: #fff;
+    border: 1.5px solid var(--line);
+    color: var(--ink);
+  }
+  .ms-lang .lang-btn .lang-arrow { color: var(--orange); }
+  .ms-lang .lang-btn:hover { border-color: var(--orange); }
+  .ms-lang .lang-btn.open {
+    border-color: var(--orange);
+    background: #fff7e6;
+  }
+  .ms-lang .lang-panel { left: auto; right: 0; min-width: 200px; }
+  @media (max-width: 360px) {
+    .ms-lang .lang-btn { min-width: 0; }
+    .ms-lang .lang-btn .lang-name { display: none; }
+  }
   .ms-brand {
     display: flex; align-items: center; gap: 14px; margin-bottom: 34px;
   }
@@ -549,6 +578,16 @@
 
 <!-- ===================== MODEL SELECTION SCREEN ===================== -->
 <div id="modelScreen">
+  <div class="ms-lang">
+    <div class="lang-selector" id="msLangSelector">
+      <button class="lang-btn" id="msLangBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+        <span class="lang-flag" id="msCurrentFlag">🇬🇧</span>
+        <span class="lang-name" id="msCurrentName">English</span>
+        <span class="lang-arrow">▾</span>
+      </button>
+      <div class="lang-panel" id="msLangPanel" role="listbox"></div>
+    </div>
+  </div>
   <div class="ms-brand">
     <div class="brand-mark">K</div>
     <div class="ms-titles">
@@ -1353,6 +1392,12 @@ const currentFlag = document.getElementById('currentFlag');
 const currentName = document.getElementById('currentName');
 const mainContent = document.getElementById('mainContent');
 
+// model-selection screen language selector
+const msLangBtn     = document.getElementById('msLangBtn');
+const msLangPanel   = document.getElementById('msLangPanel');
+const msCurrentFlag = document.getElementById('msCurrentFlag');
+const msCurrentName = document.getElementById('msCurrentName');
+
 let currentLang  = 'en';
 let currentModel = null;
 
@@ -1389,21 +1434,31 @@ function refreshCardTags(){
 }
 
 // ---------- language dropdown ----------
-LANGS.forEach(l => {
-  const opt = document.createElement('button');
-  opt.type = 'button';
-  opt.className = 'lang-option';
-  opt.setAttribute('data-lang', l.code);
-  opt.setAttribute('role', 'option');
-  opt.innerHTML = '<span class="lang-flag">' + l.flag + '</span><span>' + l.label + '</span>';
-  opt.onclick = () => { setLang(l.code); closePanel(); };
-  langPanel.appendChild(opt);
-});
+function buildLangOptions(panel){
+  LANGS.forEach(l => {
+    const opt = document.createElement('button');
+    opt.type = 'button';
+    opt.className = 'lang-option';
+    opt.setAttribute('data-lang', l.code);
+    opt.setAttribute('role', 'option');
+    opt.innerHTML = '<span class="lang-flag">' + l.flag + '</span><span>' + l.label + '</span>';
+    opt.onclick = () => { setLang(l.code); closePanel(); closeMsPanel(); };
+    panel.appendChild(opt);
+  });
+}
+buildLangOptions(langPanel);
+buildLangOptions(msLangPanel);
+
 function openPanel(){ langPanel.classList.add('open'); langBtn.classList.add('open'); langBtn.setAttribute('aria-expanded','true'); }
 function closePanel(){ langPanel.classList.remove('open'); langBtn.classList.remove('open'); langBtn.setAttribute('aria-expanded','false'); }
 langBtn.onclick = (e) => { e.stopPropagation(); langPanel.classList.contains('open') ? closePanel() : openPanel(); };
-document.addEventListener('click', (e) => { if (!e.target.closest('.lang-selector')) closePanel(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
+
+function openMsPanel(){ msLangPanel.classList.add('open'); msLangBtn.classList.add('open'); msLangBtn.setAttribute('aria-expanded','true'); }
+function closeMsPanel(){ msLangPanel.classList.remove('open'); msLangBtn.classList.remove('open'); msLangBtn.setAttribute('aria-expanded','false'); }
+msLangBtn.onclick = (e) => { e.stopPropagation(); msLangPanel.classList.contains('open') ? closeMsPanel() : openMsPanel(); };
+
+document.addEventListener('click', (e) => { if (!e.target.closest('.lang-selector')) { closePanel(); closeMsPanel(); } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closePanel(); closeMsPanel(); } });
 
 // ---------- render maintenance content for a model ----------
 function renderModel(mod){
@@ -1466,12 +1521,19 @@ function selectModel(id){
   applyI18n();
   const dict = T[currentLang] || T.en;
   document.title = (dict.page_title || 'Weekly Maintenance — Keestrack') + ' ' + mod.id;
-  window.scrollTo(0,0);
+  scrollTop();
+}
+// Reliable scroll-to-top, also on iOS Safari (waits for layout reflow)
+function scrollTop(){
+  const jump = () => window.scrollTo(0, 0);
+  jump();
+  requestAnimationFrame(() => { jump(); requestAnimationFrame(jump); });
+  setTimeout(jump, 60);
 }
 function showModelScreen(){
   appShell.classList.add('hidden');
   modelScreen.classList.remove('hidden');
-  window.scrollTo(0,0);
+  scrollTop();
 }
 modelPill.onclick = showModelScreen;
 
@@ -1498,6 +1560,8 @@ function setLang(code){
 
   currentFlag.textContent = lang.flag;
   currentName.textContent = lang.label;
+  msCurrentFlag.textContent = lang.flag;
+  msCurrentName.textContent = lang.label;
   document.querySelectorAll('.lang-option').forEach(o => {
     o.classList.toggle('active', o.getAttribute('data-lang') === code);
   });
